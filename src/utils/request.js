@@ -1,5 +1,6 @@
 // 网络请求 - 二次封装
 import axios from 'axios'
+import store from '@/store'
 
 let server = axios.create({
   // 请求公共地址
@@ -10,16 +11,21 @@ let server = axios.create({
   timeout: 5000,
 })
 
-// // 请求拦截
-// server.interceptors.request.use(config => {
-//   // console.log('请求拦截config成功',config); // config是一个包含了所有请求信息的对象 在这里可以修改config对象 修改之后需要返回config对象 请求才会正常进行
-//   // config.headers.token = "asidoaslkd-12301jkwqmwlq-sadjalsmdl2"
-//   return config
-// }, err => {
-//   // throw new Error(err)
-//   // console.log('请求拦截config失败',config);
-//   return Promise.reject(err)
-// })
+// 请求拦截
+server.interceptors.request.use(config => {
+  // console.log('请求拦截config成功',config); // config是一个包含了所有请求信息的对象 在这里可以修改config对象 修改之后需要返回config对象 请求才会正常进行
+  // config 配置对象 携带token 
+  const user = store.state.user;
+  if (user && user.token) {
+    config.headers.Authorization = `Bearer ${user.token}`
+  }
+  //务必返回config 配置对象
+  return config
+}, err => {
+  // throw new Error(err) 还没有出错 会进入这里
+  // console.log('请求拦截config失败',config);
+  return Promise.reject(err)
+})
 
 
 // 响应拦截

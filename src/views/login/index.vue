@@ -106,8 +106,12 @@ export default {
       try {
         const { data } = await login(user);
         console.log('登录成功', data);
+        // 通过vuex 存储用户信息
         this.$store.commit('setUser', data.data)
         this.$toast.success('登录成功');
+        //登录成功，跳转回原来页面
+        // back()功能不严谨
+        this.$router.back();
       } catch (error) {
         if (error.response.status == 400) {
           this.$toast.fail('手机号或验证码失败');
