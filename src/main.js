@@ -12,6 +12,7 @@ import '@/styles/index.less'
 import 'amfe-flexible'
 Vue.config.productionTip = false
 /** 注册使用vant */
+import '@/utils/dayjs'
 Vue.use(Vant)
 new Vue({
   router,

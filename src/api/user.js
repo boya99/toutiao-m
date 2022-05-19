@@ -1,6 +1,6 @@
 // 用户请求相关请求
 import request from '@/utils/request'
-import store from '@/store'
+// import store from '@/store'
 
 export const login = data => {
   return request({
@@ -32,8 +32,20 @@ export const getUserInfo = () => {
     method: 'GET',
     url: '/v1_0/user',
     //发送请求头 数据  需要授权才能访问  Bearer token数据
-    headers:{
-      Authorization:`Bearer ${store.state.user.token}`
-    }
+    // headers:{
+    //   Authorization:`Bearer ${store.state.user.token}`
+    // }
+  })
+}
+
+/**
+ * 获取用户频道信息
+ * 
+ * @returns 
+ */
+export const getUserChannels = () => {
+  return request({
+    method: 'GET',
+    url: '/v1_0/user/channels',
   })
 }
