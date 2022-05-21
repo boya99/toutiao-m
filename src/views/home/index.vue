@@ -26,40 +26,75 @@
       </van-tab>
       <!-- 占位符，频道滑到最右的地方，有个占位的地方 -->
       <div class="placeholder" slot="nav-right"></div>
-      <div class="hamburger-btn" slot="nav-right">
+      <div class="hamburger-btn" slot="nav-right" @click="isshowChannel = true">
         <i class="iconfont icon-gengduo"></i>
       </div>
     </van-tabs>
     <!-- /频道列表 -->
+
+    <!-- 频道弹出层 -->
+    <van-popup
+      class="edit-channel-popup"
+      v-model="isshowChannel"
+      closeable
+      position="bottom"
+      close-icon-position="top-left"
+      :style="{ height: '100%' }"
+    >
+      <!-- 频道组件 -->
+      <channelEdit
+        :mychannel="channelList"
+        :active="active"
+        @update-channel-active="onUpdateActive"
+      ></channelEdit>
+      <!-- /频道组件 -->
+    </van-popup>
+    <!-- /频道弹出层 -->
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list.vue'
+import channelEdit from './components/channel-edit.vue'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
 export default {
   name: 'HomeIndex',
   components: {
     ArticleList,
+    channelEdit,
   },
   data () {
     return {
       value: '',
       active: 0,
       channelList: [],//频道列表
+      isshowChannel: false,//通过 v-model 控制弹出层是否展示。
     }
   },
   methods: {
     // 获取用户频道
     async loadingUserChannels () {
       try {
-        const channelList = await getUserChannels();
-        console.log(channelList);
-        this.channelList = channelList.data.data.channels
+        if (this.user) {
+          const channelList = await getUserChannels();
+          this.channelList = channelList.data.data.channels
+        } else {
+          this.channelList = getItem('TOUTIAO_CHANNELS');
+        }
+
       } catch (error) {
         console.log('查询失败', error);
         this.$toast('获取用户频道失败')
       }
+    },
+    onUpdateActive (index, isshowChannel = true) {
+      console.log('父组件', isshowChannel);
+      //激活频道，选中状态
+      this.active = index;
+      //关闭频道弹层
+      this.isshowChannel = isshowChannel;
     }
   },
   created () {
@@ -77,6 +112,9 @@ export default {
 
     // const { data } = obj
     // console.log(data);
+  },
+  computed: {
+    ...mapState(['user'])
   }
 }
 </script>
@@ -164,6 +202,9 @@ export default {
         background-size: contain;
       }
     }
+  }
+
+  .edit-channel-popup {
   }
 }
 </style>

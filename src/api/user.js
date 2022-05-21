@@ -49,3 +49,43 @@ export const getUserChannels = () => {
     url: '/v1_0/user/channels',
   })
 }
+
+/**
+ * 获取所有频道信息
+ * 
+ * @returns 
+ */
+export const getAllChannels = () => {
+  return request({
+    method: 'GET',
+    url: '/v1_0/channels',
+  })
+}
+/**
+ * 添加用户频道请求信息
+ * 
+ * @returns 
+ */
+export const addUserChannel = channels => {
+  return request({
+    method: 'PATCH',
+    url: '/v1_0/user/channels',
+    data: {
+      channels
+    }
+  })
+}
+/**
+ * 删除用户频道请求信息
+ * 
+ * @returns 
+ */
+export const delUserChannel = channelId => {
+  return request({
+    method: 'DELETE',
+    url: '/v1_0/user/channels/:target',
+    data: {
+      channels
+    }
+  })
+}
