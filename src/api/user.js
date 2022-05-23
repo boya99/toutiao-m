@@ -83,9 +83,6 @@ export const addUserChannel = channels => {
 export const delUserChannel = channelId => {
   return request({
     method: 'DELETE',
-    url: '/v1_0/user/channels/:target',
-    data: {
-      channels
-    }
+    url: `/v1_0/user/channels/${channelId}`,
   })
 }

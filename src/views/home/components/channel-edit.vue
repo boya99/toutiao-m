@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { getAllChannels, addUserChannel } from '@/api/user'
+import { getAllChannels, addUserChannel, delUserChannel } from '@/api/user'
 import { mapState } from 'vuex';
 import { setItem } from '@/utils/storage'
 export default {
@@ -118,7 +118,10 @@ export default {
         if (index <= this.active) {//移除激活状态的前面的频道
           this.$emit('update-channel-active', this.active - 1, true)
         }
-        return this.mychannel.splice(index, 1)
+        this.mychannel.splice(index, 1)
+        //处理持久化
+        this.deleChannel(obj.id)
+        return
       } else {
         console.log('完成状态');
         //由父组件进行编辑
@@ -126,10 +129,12 @@ export default {
       }
       console.log('我的频道', this.mychannel);
     },
-    deleChannel () {
+    async deleChannel (id) {
       if (this.user) {
         //登陆
-        
+        // console.log('登陆用户删除');
+        const delRes = await delUserChannel(id);
+        console.log(delRes);
       } else {
         //未登录
         setItem('TOUTIAO_CHANNELS', this.mychannel)

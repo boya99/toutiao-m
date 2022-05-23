@@ -81,7 +81,14 @@ export default {
           const channelList = await getUserChannels();
           this.channelList = channelList.data.data.channels
         } else {
-          this.channelList = getItem('TOUTIAO_CHANNELS');
+          const localChannel = getItem('TOUTIAO_CHANNELS');
+          if (localChannel) {
+            this.channelList = localChannel
+          } else {
+            const channelList = await getUserChannels();
+            this.channelList = channelList.data.data.channels
+          }
+
         }
 
       } catch (error) {
