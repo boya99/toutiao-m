@@ -10,6 +10,7 @@
           size="small"
           type="info"
           icon="search"
+          to="/search"
           >搜索</van-button
         >
       </template>
