@@ -17,7 +17,9 @@ module.exports = {
         return file.indexOf('vant') !== -1 ? 37.5 : 75
       },
       //配置要转换的css属性
-      propList: ['*']
+      propList: ['*'],
+      // 配置不需要转rem的文件
+      exclude: 'github-markdown'
     }
   }
 }

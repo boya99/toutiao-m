@@ -1,6 +1,7 @@
 // 网络请求 - 二次封装
 import axios from 'axios'
 import store from '@/store'
+import JSONbig from 'json-bigint'
 
 let server = axios.create({
   // 请求公共地址
@@ -9,11 +10,23 @@ let server = axios.create({
   baseURL: "http://toutiao.itheima.net/",
   // 超时时间
   timeout: 5000,
+  //自定义后端响应的原始数据
+  //data 后端返回的原始数据，说白了就是JSON格式的字符串
+  transformResponse: [function (data) {
+    //axios   默认在内部JSON.parse(data)数据
+    // return JSON.parse(data)
+
+    try {
+      return JSONbig.parse(data)
+    } catch (error) {
+      return data
+    }
+  }],
 })
 
 // 请求拦截
 server.interceptors.request.use(config => {
-  // console.log('请求拦截config成功',config); // config是一个包含了所有请求信息的对象 在这里可以修改config对象 修改之后需要返回config对象 请求才会正常进行
+  //  config是一个包含了所有请求信息的对象 在这里可以修改config对象 修改之后需要返回config对象 请求才会正常进行
   // config 配置对象 携带token 
   const user = store.state.user;
   if (user && user.token) {

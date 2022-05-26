@@ -86,3 +86,30 @@ export const delUserChannel = channelId => {
     url: `/v1_0/user/channels/${channelId}`,
   })
 }
+
+/**
+ * 关注用户
+ * 
+ * @returns 
+ */
+export const addFllowUser = target => {
+  return request({
+    method: 'POST',
+    url: `/v1_0/user/followings`,
+    data: {
+      target: target
+    }
+  })
+}
+/**
+ * 取消关注用户
+ * 
+ * @returns 
+ */
+export const delfllowsUser = targetId => {
+  return request({
+    method: 'DELETE',
+    url: `/v1_0/user/followings/${targetId}`,
+
+  })
+}
