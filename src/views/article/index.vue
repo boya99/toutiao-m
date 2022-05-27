@@ -94,13 +94,24 @@
           ref="article-content"
         ></div>
         <van-divider>正文结束</van-divider>
-
+        <!-- 文章评论列表 -->
+        <commentList
+          :artId="article.art_id"
+          :list="commentListAr"
+          @totalComment="totalCommentCount = $event.total_count"
+        ></commentList>
+        <!-- /文章评论列表 -->
         <!-- 底部区域 -->
         <div class="article-bottom">
-          <van-button class="comment-btn" type="default" round size="small"
+          <van-button
+            class="comment-btn"
+            type="default"
+            round
+            size="small"
+            @click="isPostshow = true"
             >写评论</van-button
           >
-          <van-icon name="comment-o" badge="123" color="#777" />
+          <van-icon name="comment-o" :badge="totalCommentCount" color="#777" />
           <!-- 什么时候使用组件v-model  传值，且要修改的时候 -->
           <collectArticle
             v-model="article.is_collected"
@@ -114,6 +125,15 @@
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
+
+        <!-- 发布评论给 -->
+        <van-popup v-model="isPostshow" position="bottom">
+          <CommentPost
+            :target="article.art_id"
+            @postSuccess="onPostSuccess"
+          ></CommentPost>
+        </van-popup>
+        <!-- /发布评论给 -->
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -142,12 +162,16 @@ import { addFllowUser, delfllowsUser } from '@/api/user'
 import followUser from '@/components/follow-user'
 import collectArticle from '@/components/collect-article'
 import likeArticle from '@/components/like-article'
+import commentList from './components/comment-list.vue'
+import CommentPost from './components/comment-post.vue'
 export default {
   name: 'ArticleIndex',
   components: {
     followUser,
     collectArticle,
     likeArticle,
+    commentList,
+    CommentPost,
   },
   props: {
     articleId: {
@@ -161,13 +185,16 @@ export default {
       loading: true,//加载状态 true 
       errorStatus: 0,//错误状态码
       followLoding: false,//关注按钮loding
+      totalCommentCount: 0,//评论数量
+      isPostshow: false,//控制发布评论的显示状态
+      commentListAr: [],//评论列表
     }
   },
   computed: {},
   watch: {
-    article () {
-      console.log(this.article);
-    }
+    // article () {
+    //   console.log(this.article);
+    // }
   },
   created () {
     this.loadArticle();
@@ -251,6 +278,15 @@ export default {
     },
     onUpdateFollow () {
       this.article.is_followed = !this.article.is_followed
+    },
+    // onCommentCount (val) {
+    //   this.totalCommentCount = val
+    // }
+    onPostSuccess (data) {
+      //关闭弹出层，
+      this.isPostshow = false
+      //发布内容显示到顶部  传递给父组件，由父组件执行操作
+      this.commentListAr.unshift(data.new_obj)
     }
   }
 }
