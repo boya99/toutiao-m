@@ -1,6 +1,6 @@
 <template>
   <van-button
-    v-if="value == false"
+    v-if="isFollowd == false"
     class="follow-btn"
     type="info"
     color="#3296fa"
@@ -26,8 +26,18 @@
 import { addFllowUser, delfllowsUser } from '@/api/user'
 export default {
   name: 'followUser',
+  //用来修改父组件中v-model 的传递的参数名
+  model: {
+    prop: 'isFollowd',
+    event: 'updateIsFollow'
+  },
   props: {
-    value: {
+    //value 父组件v-model 默认传递的参数名为value
+    // value: {
+    //   type: Boolean,
+    //   required: true
+    // },
+    isFollowd: {
       type: Boolean,
       required: true
     },
@@ -46,7 +56,7 @@ export default {
     async onFllow () {
       this.followLoding = true
       try {
-        if (this.value) {//取消关注操作
+        if (this.isFollowd) {//取消关注操作
           let { data } = await delfllowsUser(this.userId)
           console.log('取消关注操作', data);
           // this.article.is_followed = false
@@ -57,8 +67,9 @@ export default {
           // this.article.is_followed = true
         }
         // this.followStatus = !this.followStatus
-        //修改父组件的关注状态
-        this.$emit('input', !this.followStatus);
+        //修改父组件的关注状态 //input 父组件v-model 默认传递的事件名称为 input
+        // this.$emit('input', !this.followStatus);
+        this.$emit('updateIsFollow', !this.followStatus);
         // this.$emit('updateFollow', !this.followStatus);
 
       } catch (error) {

@@ -40,12 +40,20 @@
 
               简写形式：组件上使用v-model
 
-               v-model="article.is_followed" 相当于下面2句代码
+               v-model="article.is_followed" 相当于下面2句代码 $event 就是子组件需要传递的值
               
               value="article.is_followed"
               @input="article.is_followed = $event"
 
               子组件需要props接收value,调动$emit('input') 事件
+
+              v-model 子组件默认使用value属性和input事件， v-model 只能定义使用一次
+              多个数据实现类似v-model 的效果，可以使用.sync属性（查阅vue文档）
+              可以在子组件中通过 设置props 定义接收的参数名和 event 定义事件
+              model：{
+                props:'abc',
+                event:'btn'
+              }
                 --------
               :followStatus="article.is_followed"
               @updateFollow="onUpdateFollow"
@@ -86,6 +94,26 @@
           ref="article-content"
         ></div>
         <van-divider>正文结束</van-divider>
+
+        <!-- 底部区域 -->
+        <div class="article-bottom">
+          <van-button class="comment-btn" type="default" round size="small"
+            >写评论</van-button
+          >
+          <van-icon name="comment-o" badge="123" color="#777" />
+          <!-- 什么时候使用组件v-model  传值，且要修改的时候 -->
+          <collectArticle
+            v-model="article.is_collected"
+            :articleId="article.art_id"
+          ></collectArticle>
+          <!-- <van-icon color="#777" name="good-job-o" /> -->
+          <likeArticle
+            v-model="article.attitude"
+            :articleId="article.art_id"
+          ></likeArticle>
+          <van-icon name="share" color="#777777"></van-icon>
+        </div>
+        <!-- /底部区域 -->
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -104,18 +132,6 @@
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
-
-    <!-- 底部区域 -->
-    <div class="article-bottom">
-      <van-button class="comment-btn" type="default" round size="small"
-        >写评论</van-button
-      >
-      <van-icon name="comment-o" info="123" color="#777" />
-      <van-icon color="#777" name="star-o" />
-      <van-icon color="#777" name="good-job-o" />
-      <van-icon name="share" color="#777777"></van-icon>
-    </div>
-    <!-- /底部区域 -->
   </div>
 </template>
 
@@ -124,10 +140,14 @@ import { getArticleById } from '@/api/article'
 import { ImagePreview } from 'vant';
 import { addFllowUser, delfllowsUser } from '@/api/user'
 import followUser from '@/components/follow-user'
+import collectArticle from '@/components/collect-article'
+import likeArticle from '@/components/like-article'
 export default {
   name: 'ArticleIndex',
   components: {
-    followUser
+    followUser,
+    collectArticle,
+    likeArticle,
   },
   props: {
     articleId: {
