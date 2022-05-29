@@ -1,7 +1,12 @@
 <template>
   <div class="article-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" left-arrow title="黑马头条"></van-nav-bar>
+    <van-nav-bar
+      class="page-nav-bar"
+      left-arrow
+      title="黑马头条"
+      @click-left="$router.back()"
+    ></van-nav-bar>
     <!-- /导航栏 -->
 
     <div class="main-wrap">
@@ -96,9 +101,12 @@
         <van-divider>正文结束</van-divider>
         <!-- 文章评论列表 -->
         <commentList
+          id="target"
+          ref="myH"
           :artId="article.art_id"
           :list="commentListAr"
           @totalComment="totalCommentCount = $event.total_count"
+          @replayClick="onReplayClick"
         ></commentList>
         <!-- /文章评论列表 -->
         <!-- 底部区域 -->
@@ -111,13 +119,18 @@
             @click="isPostshow = true"
             >写评论</van-button
           >
-          <van-icon name="comment-o" :badge="totalCommentCount" color="#777" />
-          <!-- 什么时候使用组件v-model  传值，且要修改的时候 -->
+          <van-icon
+            name="comment-o"
+            :badge="totalCommentCount"
+            color="#777"
+            @click="commentBtn"
+          />
+          <!-- 收藏文章 什么时候使用组件v-model  传值，且要修改的时候 -->
           <collectArticle
             v-model="article.is_collected"
             :articleId="article.art_id"
           ></collectArticle>
-          <!-- <van-icon color="#777" name="good-job-o" /> -->
+          <!-- 点赞文章 -->
           <likeArticle
             v-model="article.attitude"
             :articleId="article.art_id"
@@ -152,6 +165,21 @@
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
+
+    <!-- 评论回复 -->
+    <!-- 弹层是懒渲染的,只有在第一次展示的时候才会渲染里面的内容 -->
+    <van-popup v-model="isReplayshow" position="bottom" style="height: 100%">
+      <!-- v-if条件渲染
+        true:渲染元素节点
+        false:不渲染元素节点
+      -->
+      <CommentReply
+        v-if="isReplayshow"
+        :comment="currentComment"
+        @click-close="isReplayshow = false"
+      ></CommentReply>
+    </van-popup>
+    <!-- /评论回复 -->
   </div>
 </template>
 
@@ -164,6 +192,7 @@ import collectArticle from '@/components/collect-article'
 import likeArticle from '@/components/like-article'
 import commentList from './components/comment-list.vue'
 import CommentPost from './components/comment-post.vue'
+import CommentReply from './components/comment-replay.vue'
 export default {
   name: 'ArticleIndex',
   components: {
@@ -172,6 +201,13 @@ export default {
     likeArticle,
     commentList,
     CommentPost,
+    CommentReply,
+  },
+  //给所有后代组件提供数据
+  provide: function () {
+    return {
+      articleId: this.articleId
+    }
   },
   props: {
     articleId: {
@@ -188,6 +224,8 @@ export default {
       totalCommentCount: 0,//评论数量
       isPostshow: false,//控制发布评论的显示状态
       commentListAr: [],//评论列表
+      isReplayshow: false,//是否回复评论,
+      currentComment: null,//当前评论对象
     }
   },
   computed: {},
@@ -201,6 +239,15 @@ export default {
   },
   mounted () { },
   methods: {
+    commentBtn () {
+      document.getElementById("target").scrollIntoView();
+      // const list = this.$refs.commentList;
+      // console.log('评论dom', list);
+      console.log('vue.js', this.$refs.myH);
+      console.log('原生js', document.getElementById("target"));
+      // this.$refs.commentList.scrollIntoView({ behavior: "instant", block: "end", inline: "nearest" });
+
+    },
     async loadArticle () {
       this.loading = true;
 
@@ -287,6 +334,13 @@ export default {
       this.isPostshow = false
       //发布内容显示到顶部  传递给父组件，由父组件执行操作
       this.commentListAr.unshift(data.new_obj)
+    },
+    // 子组件评论回复
+    onReplayClick (comment) {
+      console.log(comment);
+      this.currentComment = comment
+      //显示评论层
+      this.isReplayshow = true
     }
   }
 }

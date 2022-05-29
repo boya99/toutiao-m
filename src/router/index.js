@@ -47,7 +47,12 @@ const routes = [{
     name: 'article',
     component: () => import('@/views/article/index.vue'),
     props: true, //开启 子组件props 传参
-  }
+  },
+  {
+    path: '/user/profile', //动态路由
+    name: 'profile',
+    component: () => import('@/views/user-info/index.vue'),
+  },
 ]
 
 const router = new VueRouter({
